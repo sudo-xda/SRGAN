@@ -1,3 +1,6 @@
 
 *.pyc
 /data
+*.pth
+*.jpg
+*.png
