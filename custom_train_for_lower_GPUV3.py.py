@@ -1,4 +1,3 @@
-#this will onlly save 50 images from vals set  to save space
 import argparse
 import os
 from math import log10
@@ -15,8 +14,9 @@ from model import Generator, Discriminator
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int)
-parser.add_argument('--upscale_factor', default=2, type=int, choices=[2, 4, 8])
+parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', default=100, type=int)
+parser.add_argument('--file_name', default='LL_WBN_128_batch', type=str, help='Custom file name to be appended to the output')
 
 if __name__ == '__main__':
     opt = parser.parse_args()
@@ -24,10 +24,17 @@ if __name__ == '__main__':
     CROP_SIZE = opt.crop_size
     UPSCALE_FACTOR = opt.upscale_factor
     NUM_EPOCHS = opt.num_epochs
+    FILE_NAME = opt.file_name
 
-    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT_Val', upscale_factor=UPSCALE_FACTOR)
-    train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=128, shuffle=True)
+    # Add a default if no file name is provided
+    if FILE_NAME == '':
+        FILE_NAME = 'default_model'  # You can change this to any default value you prefer
+
+    # hr_folder = "/home/dst/Desktop/GAN/SRGAN/data/wavlet/LL"
+    # val_folder = "/home/dst/Desktop/GAN/SRGAN/data/wavlet/LL_val"
+    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN/data/wavlet/LL', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN/data/wavlet/LL_val', upscale_factor=UPSCALE_FACTOR)
+    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=128, shuffle=True)
     val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=1, shuffle=False)
 
     netG = Generator(UPSCALE_FACTOR)
@@ -93,7 +100,7 @@ if __name__ == '__main__':
 
     
         netG.eval()
-        out_path = 'training_results/SRF_BN' + str(UPSCALE_FACTOR) + '/'
+        out_path = f'training_results/{FILE_NAME}_SRF_{str(UPSCALE_FACTOR)}_BN_BATCHSIZE{str(batch_size)}/'
         if not os.path.exists(out_path):
             os.makedirs(out_path)
 
@@ -141,8 +148,8 @@ if __name__ == '__main__':
                         break
 
 
-        torch.save(netG.state_dict(), 'epochs/netG_BN_epoch_%d_%d.pth' % (UPSCALE_FACTOR, epoch))
-        torch.save(netD.state_dict(), 'epochs/netD_BN_epoch_%d_%d.pth' % (UPSCALE_FACTOR, epoch))
+        torch.save(netG.state_dict(), f'epochs/{FILE_NAME}_netG_BN_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
+        torch.save(netD.state_dict(), f'epochs/{FILE_NAME}_netD_BN_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
         results['d_loss'].append(running_results['d_loss'] / running_results['batch_sizes'])
         results['g_loss'].append(running_results['g_loss'] / running_results['batch_sizes'])
         results['d_score'].append(running_results['d_score'] / running_results['batch_sizes'])
@@ -160,9 +167,4 @@ if __name__ == '__main__':
                       'Score_G': results['g_score'], 'PSNR': results['psnr'], 'SSIM': results['ssim'],
                       'Loss_Ratio': results['loss_ratio'], 'Learning_Rate': results['learning_rate']},
                 index=range(1, epoch + 1))
-            data_frame.to_csv(out_path + 'srf_' + str(UPSCALE_FACTOR) + 'X_BN_train_results.csv', index_label='Epoch')
-
-
-
-
-
+            data_frame.to_csv(out_path + f'{FILE_NAME}_srf_{str(UPSCALE_FACTOR)}x_bn_batchsize{str(batch_size)}_train_results.csv', index_label='Epoch')

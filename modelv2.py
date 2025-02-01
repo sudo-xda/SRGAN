@@ -2,14 +2,14 @@ import math
 import torch
 from torch import nn
 
-
 class Generator(nn.Module):
     def __init__(self, scale_factor):
         upsample_block_num = int(math.log(scale_factor, 2))
 
         super(Generator, self).__init__()
+        # Change the first conv layer to accept 1 input channel (grayscale)
         self.block1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=9, padding=4),
+            nn.Conv2d(1, 64, kernel_size=9, padding=4),  # Change from 3 to 1 channel
             nn.PReLU()
         )
         self.block2 = ResidualBlock(64)
@@ -22,7 +22,7 @@ class Generator(nn.Module):
             #nn.BatchNorm2d(64)
         )
         block8 = [UpsampleBLock(64, 2) for _ in range(upsample_block_num)]
-        block8.append(nn.Conv2d(64, 3, kernel_size=9, padding=4))
+        block8.append(nn.Conv2d(64, 1, kernel_size=9, padding=4))  # Change the output to 1 channel (grayscale)
         self.block8 = nn.Sequential(*block8)
 
     def forward(self, x):
@@ -35,14 +35,15 @@ class Generator(nn.Module):
         block7 = self.block7(block6)
         block8 = self.block8(block1 + block7)
 
-        return (torch.tanh(block8) + 1) / 2
+        return (torch.tanh(block8) + 1) / 2  # Output range [0, 1]
 
 
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
         self.net = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, padding=1),
+            # Change the first conv layer to accept 1 input channel (grayscale)
+            nn.Conv2d(1, 64, kernel_size=3, padding=1),  # Change from 3 to 1 channel
             nn.LeakyReLU(0.2),
 
             nn.Conv2d(64, 64, kernel_size=3, stride=2, padding=1),

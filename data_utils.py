@@ -47,7 +47,7 @@ class TrainDatasetFromFolder(Dataset):
         self.lr_transform = train_lr_transform(crop_size, upscale_factor)
 
     def __getitem__(self, index):
-        hr_image = self.hr_transform(Image.open(self.image_filenames[index]))
+        hr_image = self.hr_transform(Image.open(self.image_filenames[index]).convert('RGB'))
         lr_image = self.lr_transform(hr_image)
         return lr_image, hr_image
 
@@ -62,7 +62,7 @@ class ValDatasetFromFolder(Dataset):
         self.image_filenames = [join(dataset_dir, x) for x in listdir(dataset_dir) if is_image_file(x)]
 
     def __getitem__(self, index):
-        hr_image = Image.open(self.image_filenames[index])
+        hr_image = Image.open(self.image_filenames[index]).convert('RGB')
         w, h = hr_image.size
         crop_size = calculate_valid_crop_size(min(w, h), self.upscale_factor)
         lr_scale = Resize(crop_size // self.upscale_factor, interpolation=Image.BICUBIC)
