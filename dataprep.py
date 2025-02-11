@@ -31,8 +31,8 @@ def create_validation_dataset(hr_folder, val_folder, percentage):
     print(f"Moved {len(val_files)} files to the validation folder.")
 
 
-hr_folder = "/home/dst/Desktop/GAN/SRGAN/data/wavlet/LH"
-val_folder = "/home/dst/Desktop/GAN/SRGAN/data/wavlet/LH_val"
+hr_folder = "/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR"
+val_folder = "/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR_val"
 percentage = 20  
 
 create_validation_dataset(hr_folder, val_folder, percentage)
