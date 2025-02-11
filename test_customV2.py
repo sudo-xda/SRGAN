@@ -7,15 +7,15 @@ from PIL import Image
 from torch.autograd import Variable
 from torchvision.transforms import ToTensor, ToPILImage, Resize
 
-from model import Generator
+from model_cnn_trans import Generator
 
 # Argument Parser
 parser = argparse.ArgumentParser(description='Super Resolution Processing')
-parser.add_argument('--upscale_factor', default=2, type=int, help='super resolution upscale factor')
-parser.add_argument('--test_mode', default='GPU', type=str, choices=['GPU', 'CPU'], help='using GPU or CPU')
+parser.add_argument('--upscale_factor', default=4, type=int, help='super resolution upscale factor')
+parser.add_argument('--test_mode', default='CPU', type=str, choices=['GPU', 'CPU'], help='using GPU or CPU')
 parser.add_argument('--test_folder', type=str, help='folder containing high-resolution images')
 parser.add_argument('--output_folder', type=str, help='folder to save GT, LR, and SR images')
-parser.add_argument('--model_name', default='netG_epoch_4_100.pth', type=str, help='generator model epoch name')
+parser.add_argument('--model_name', default='BN_64_batch_ctrans_netG_epoch_4_100.pth', type=str, help='generator model epoch name')
 opt = parser.parse_args()
 
 # Parameters
@@ -39,7 +39,7 @@ os.makedirs(SR_FOLDER, exist_ok=True)
 model = Generator(UPSCALE_FACTOR).eval()
 if TEST_MODE:
     model.cuda()
-    model.load_state_dict(torch.load('epochs/' + MODEL_NAME))
+    model.load_state_dict(torch.load('epochs/' + MODEL_NAME), strict=False)
 else:
     model.load_state_dict(torch.load('epochs/' + MODEL_NAME, map_location=torch.device('cpu')))
 

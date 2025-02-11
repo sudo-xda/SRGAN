@@ -16,9 +16,9 @@ parser.add_argument('--upscale_factor', default=4, type=int, help='super resolut
 parser.add_argument('--test_mode', default='GPU', type=str, choices=['GPU', 'CPU'], help='using GPU or CPU')
 parser.add_argument('--test_folder', type=str, help='folder containing high-resolution images')
 parser.add_argument('--output_folder', type=str, help='folder to save GT, LR, SR images')
-parser.add_argument('--model_name', default='netG_BN_epoch_4  _100.pth', type=str, help='generator model epoch name')
+parser.add_argument('--model_name', default='HL_BN_128_batch_netG_BN_epoch_4_18.pth', type=str, help='generator model epoch name')
 opt = parser.parse_args()
-
+#data/wavlet/LL_val/image_011_rotate_LL.png data/wavlet/LL_val/image_016_rotate_10_LL.png data/wavlet/LL_val/image_024_flip_7_LL.png data/wavlet/LL_val/image_029_rotate_5_LL.png data/wavlet/LL_val/image_029_rotate_LL.png data/wavlet/LL_val/image_044_rotate_LL.png data/wavlet/LL_val/image_048_rotate_2_LL.png data/wavlet/LL_val/image_051_flip_4_LL.png data/wavlet/LL_val/image_055_rotate_4_LL.png data/wavlet/LL_val/image_062_rotate_2_LL.png data/wavlet/LL_val/image_070_flip_2_LL.png
 # Parameters
 UPSCALE_FACTOR = opt.upscale_factor
 TEST_MODE = True if opt.test_mode == 'GPU' else False
@@ -71,8 +71,9 @@ for image_name in os.listdir(TEST_FOLDER):
     # Create LR Image by Downsampling
     lr_image = hr_image.resize(
         (hr_image.width // UPSCALE_FACTOR, hr_image.height // UPSCALE_FACTOR),
-        Image.BICUBIC
+        Image.BICUBIC  # Convert to RGB before downsampling
     )
+    lr_image =lr_image.convert('RGB')
     lr_image.save(os.path.join(LR_FOLDER, image_name))  # Save LR Image
 
     # Upsample LR Image (Back to HR)

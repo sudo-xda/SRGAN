@@ -4,7 +4,7 @@ import pywt
 import numpy as np
 
 # Define the paths
-input_dir = '/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT'
+input_dir = '/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR'
 output_dir = '/home/dst/Desktop/GAN/SRGAN/data/wavlet'
 
 # Create subfolders for each subband (LL, LH, HL, HH)
@@ -22,7 +22,7 @@ os.makedirs(hh_dir, exist_ok=True)
 # Function to perform wavelet transform and save subbands in respective folders
 def wavelet_transform_and_save(image, filename):
     # Perform 2D discrete wavelet transform
-    coeffs2 = pywt.dwt2(image, 'haar')  # You can change 'haar' to other wavelets like 'db1', 'db2', etc.
+    coeffs2 = pywt.dwt2(image, 'db2')  # You can change 'haar' to other wavelets like 'db1', 'db2', etc.
     LL, (LH, HL, HH) = coeffs2
     
     # Save the subbands in respective directories
