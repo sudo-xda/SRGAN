@@ -1,0 +1,87 @@
+Checking range for LL component:
+Image: image_089_rotate_LL.png
+Min: 0, Max: 255, Mean: 83.28866577148438
+Image: image_2502_rotate_LL.png
+Min: 0, Max: 255, Mean: 61.777740478515625
+Image: image_097_flip_6_LL.png
+Min: 0, Max: 255, Mean: 83.6182861328125
+Image: image_490_rotate_6_LL.png
+Min: 0, Max: 255, Mean: 41.69981384277344
+Image: image_1423_flip_LL.png
+Min: 0, Max: 255, Mean: 53.619964599609375
+Image: image_212_rotate_4_LL.png
+Min: 0, Max: 255, Mean: 67.03955078125
+Image: image_3440_rotate_9_LL.png
+Min: 0, Max: 255, Mean: 55.0953369140625
+Image: image_1205_rotate_5_LL.png
+Min: 0, Max: 255, Mean: 66.66921997070312
+Image: image_2571_flip_LL.png
+Min: 0, Max: 255, Mean: 62.63224792480469
+Image: image_3366_flip_1_LL.png
+Min: 0, Max: 255, Mean: 57.44621276855469
+
+Checking range for HL component:
+Image: image_789_rotate_HL.png
+Min: 0, Max: 255, Mean: 2.34332275390625
+Image: image_2704_rotate_7_HL.png
+Min: 0, Max: 255, Mean: 1.705810546875
+Image: image_2048_rotate_2_HL.png
+Min: 0, Max: 255, Mean: 2.614532470703125
+Image: image_3094_rotate_HL.png
+Min: 0, Max: 255, Mean: 2.1942596435546875
+Image: image_2692_flip_3_HL.png
+Min: 0, Max: 255, Mean: 1.804931640625
+Image: image_2684_rotate_HL.png
+Min: 0, Max: 255, Mean: 1.6834564208984375
+Image: image_2579_flip_1_HL.png
+Min: 0, Max: 255, Mean: 2.41461181640625
+Image: image_2537_rotate_HL.png
+Min: 0, Max: 255, Mean: 1.4445343017578125
+Image: image_1559_rotate_10_HL.png
+Min: 0, Max: 255, Mean: 3.470428466796875
+Image: image_1492_flip_5_HL.png
+Min: 0, Max: 255, Mean: 1.9810943603515625
+
+Checking range for LH component:
+Image: image_2416_rotate_3_LH.png
+Min: 0, Max: 255, Mean: 2.0601806640625
+Image: image_1552_rotate_1_LH.png
+Min: 0, Max: 255, Mean: 2.6230316162109375
+Image: image_553_rotate_1_LH.png
+Min: 0, Max: 255, Mean: 2.15576171875
+Image: image_368_flip_5_LH.png
+Min: 0, Max: 255, Mean: 1.67486572265625
+Image: image_1237_rotate_LH.png
+Min: 0, Max: 255, Mean: 2.5004425048828125
+Image: image_2141_rotate_LH.png
+Min: 0, Max: 255, Mean: 2.559844970703125
+Image: image_809_flip_9_LH.png
+Min: 0, Max: 255, Mean: 1.86248779296875
+Image: image_870_rotate_10_LH.png
+Min: 0, Max: 229, Mean: 1.703277587890625
+Image: image_2938_rotate_7_LH.png
+Min: 0, Max: 255, Mean: 2.1077117919921875
+Image: image_496_flip_LH.png
+Min: 0, Max: 255, Mean: 1.597869873046875
+
+Checking range for HH component:
+Image: image_1869_flip_HH.png
+Min: 0, Max: 130, Mean: 0.83428955078125
+Image: image_2330_rotate_8_HH.png
+Min: 0, Max: 130, Mean: 1.0902557373046875
+Image: image_039_flip_9_HH.png
+Min: 0, Max: 130, Mean: 0.8759307861328125
+Image: image_1821_rotate_HH.png
+Min: 0, Max: 152, Mean: 1.126678466796875
+Image: image_298_rotate_7_HH.png
+Min: 0, Max: 130, Mean: 0.7611846923828125
+Image: image_3275_rotate_HH.png
+Min: 0, Max: 134, Mean: 0.87640380859375
+Image: image_3428_rotate_8_HH.png
+Min: 0, Max: 128, Mean: 0.9090118408203125
+Image: image_1075_flip_6_HH.png
+Min: 0, Max: 129, Mean: 0.97833251953125
+Image: image_3161_flip_3_HH.png
+Min: 0, Max: 130, Mean: 1.338775634765625
+Image: image_705_flip_HH.png
+Min: 0, Max: 199, Mean: 1.0432586669921875

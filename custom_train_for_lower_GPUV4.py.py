@@ -10,13 +10,13 @@ from tqdm import tqdm
 import pytorch_ssim
 from data_utils import TrainDatasetFromFolder, ValDatasetFromFolder, display_transform
 from loss import GeneratorLoss
-from model_cnn_trans import Generator, Discriminator
+from model_cnn_transv3_LG import Generator, Discriminator
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int)
 parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', default=100, type=int)
-parser.add_argument('--file_name', default='BN_64_batch_ctrans', type=str, help='Custom file name to be appended to the output')
+parser.add_argument('--file_name', default='Flicker2K_Hybrid_', type=str, help='Custom file name to be appended to the output')
 
 if __name__ == '__main__':
     opt = parser.parse_args()
@@ -32,10 +32,10 @@ if __name__ == '__main__':
 
     # hr_folder = "/home/dst/Desktop/GAN/SRGAN/data/wavlet/LL"
     # val_folder = "/home/dst/Desktop/GAN/SRGAN/data/wavlet/LL_val"
-    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT_Val', upscale_factor=UPSCALE_FACTOR)
+    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR_val', upscale_factor=UPSCALE_FACTOR)
     train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=64, shuffle=True)
-    val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=1, shuffle=False)
+    val_loader = DataLoader(dataset=val_set, num_workers=8, batch_size=1, shuffle=False)
 
     netG = Generator(UPSCALE_FACTOR)
     netD = Discriminator()
@@ -98,9 +98,9 @@ if __name__ == '__main__':
                 running_results['d_score'] / running_results['batch_sizes'],
                 running_results['g_score'] / running_results['batch_sizes']))
 
-        torch.cuda.empty_cache()
+
         netG.eval()
-        out_path = f'training_results/{FILE_NAME}_SRF_{str(UPSCALE_FACTOR)}_BN_BATCHSIZE{str(batch_size)}/'
+        out_path = f'training_results/{FILE_NAME}_SRF_{str(UPSCALE_FACTOR)}_/'
         if not os.path.exists(out_path):
             os.makedirs(out_path)
 
@@ -148,8 +148,8 @@ if __name__ == '__main__':
                         break
 
 
-        torch.save(netG.state_dict(), f'epochs/{FILE_NAME}_netG_BN_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
-        torch.save(netD.state_dict(), f'epochs/{FILE_NAME}_netD_BN_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
+        torch.save(netG.state_dict(), f'epochs/{FILE_NAME}_netG_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
+        torch.save(netD.state_dict(), f'epochs/{FILE_NAME}_netD_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
         results['d_loss'].append(running_results['d_loss'] / running_results['batch_sizes'])
         results['g_loss'].append(running_results['g_loss'] / running_results['batch_sizes'])
         results['d_score'].append(running_results['d_score'] / running_results['batch_sizes'])
@@ -167,4 +167,4 @@ if __name__ == '__main__':
                       'Score_G': results['g_score'], 'PSNR': results['psnr'], 'SSIM': results['ssim'],
                       'Loss_Ratio': results['loss_ratio'], 'Learning_Rate': results['learning_rate']},
                 index=range(1, epoch + 1))
-            data_frame.to_csv(out_path + f'{FILE_NAME}_srf_{str(UPSCALE_FACTOR)}x_bn_batchsize{str(batch_size)}_train_results.csv', index_label='Epoch')
+            data_frame.to_csv(out_path + f'{FILE_NAME}_srf_{str(UPSCALE_FACTOR)}x_train_results.csv', index_label='Epoch')

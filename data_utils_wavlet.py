@@ -1,40 +1,33 @@
-from os import listdir
-from os.path import join
+from torchvision.transforms import Normalize
 
-from PIL import Image
-from torch.utils.data.dataset import Dataset
-from torchvision.transforms import Compose, RandomCrop, ToTensor, ToPILImage, CenterCrop, Resize
-
-
-def is_image_file(filename):
-    return any(filename.endswith(extension) for extension in ['.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG'])
-
-
-def calculate_valid_crop_size(crop_size, upscale_factor):
-    return crop_size - (crop_size % upscale_factor)
-
+def normalize_transform():
+    return Compose([
+        ToTensor(),
+        Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # normalize using common ImageNet mean/std
+    ])
 
 def train_hr_transform(crop_size):
     return Compose([
         RandomCrop(crop_size),
         ToTensor(),
+        Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
-
 
 def train_lr_transform(crop_size, upscale_factor):
     return Compose([
         ToPILImage(),
         Resize(crop_size // upscale_factor, interpolation=Image.BICUBIC),
-        ToTensor()
+        ToTensor(),
+        Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
-
 
 def display_transform():
     return Compose([
         ToPILImage(),
         Resize(400),
         CenterCrop(400),
-        ToTensor()
+        ToTensor(),
+        Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
 
@@ -70,7 +63,9 @@ class ValDatasetFromFolder(Dataset):
         hr_image = CenterCrop(crop_size)(hr_image)
         lr_image = lr_scale(hr_image)
         hr_restore_img = hr_scale(lr_image)
-        return ToTensor()(lr_image), ToTensor()(hr_restore_img), ToTensor()(hr_image)
+        return Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])(ToTensor()(lr_image)), \
+               Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])(ToTensor()(hr_restore_img)), \
+               Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])(ToTensor()(hr_image))
 
     def __len__(self):
         return len(self.image_filenames)
@@ -92,7 +87,10 @@ class TestDatasetFromFolder(Dataset):
         hr_image = Image.open(self.hr_filenames[index])
         hr_scale = Resize((self.upscale_factor * h, self.upscale_factor * w), interpolation=Image.BICUBIC)
         hr_restore_img = hr_scale(lr_image)
-        return image_name, ToTensor()(lr_image), ToTensor()(hr_restore_img), ToTensor()(hr_image)
+        return image_name, \
+               Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])(ToTensor()(lr_image)), \
+               Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])(ToTensor()(hr_restore_img)), \
+               Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])(ToTensor()(hr_image))
 
     def __len__(self):
         return len(self.lr_filenames)
