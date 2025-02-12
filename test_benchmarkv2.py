@@ -16,11 +16,13 @@ from model import Generator
 
 parser = argparse.ArgumentParser(description='Test Benchmark Datasets')
 parser.add_argument('--upscale_factor', default=4, type=int, help='super resolution upscale factor')
-parser.add_argument('--model_name', default='Flicker2K_srgan__netG_epoch_4_93.pth', type=str, help='generator model epoch name')
+parser.add_argument('--model_name', default='Flicker2K_srgan__netG_epoch_4_94.pth', type=str, help='generator model epoch name')
+parser.add_argument('--dataset_name', default='BSD100', type=str, help='Default dataset name if not found in filename')
 opt = parser.parse_args()
 
 UPSCALE_FACTOR = opt.upscale_factor
 MODEL_NAME = opt.model_name
+DEFAULT_DATASET = opt.dataset_name
 
 results = {'Set5': {'psnr': [], 'ssim': []}, 'Set14': {'psnr': [], 'ssim': []}, 'BSD100': {'psnr': [], 'ssim': []},
            'Urban100': {'psnr': [], 'ssim': []}, 'SunHays80': {'psnr': [], 'ssim': []}}
@@ -30,7 +32,7 @@ if torch.cuda.is_available():
     model = model.cuda()
 model.load_state_dict(torch.load('epochs/' + MODEL_NAME))
 
-test_set = TestDatasetFromFolder('data/test', upscale_factor=UPSCALE_FACTOR)
+test_set = TestDatasetFromFolder('data/test/BSD100', upscale_factor=UPSCALE_FACTOR)  # Change to BSD100
 test_loader = DataLoader(dataset=test_set, num_workers=0, batch_size=1, shuffle=False)
 test_bar = tqdm(test_loader, desc='[testing benchmark datasets]')
 
@@ -58,9 +60,15 @@ for image_name, lr_image, hr_restore_img, hr_image in test_bar:
     utils.save_image(image, out_path + image_name.split('.')[0] + '_psnr_%.4f_ssim_%.4f.' % (psnr, ssim) +
                      image_name.split('.')[-1], padding=5)
 
-    # save psnr\ssim
-    results[image_name.split('_')[0]]['psnr'].append(psnr)
-    results[image_name.split('_')[0]]['ssim'].append(ssim)
+    # Determine dataset name from filename
+    dataset_name = image_name.split('_')[0]
+    if dataset_name not in results:
+        dataset_name = DEFAULT_DATASET  # Assign to BSD100 if not found
+        print(f"Warning: Could not determine dataset for {image_name}, assigning to {DEFAULT_DATASET}")
+
+    # Save PSNR and SSIM
+    results[dataset_name]['psnr'].append(psnr)
+    results[dataset_name]['ssim'].append(ssim)
 
 out_path = 'statistics/'
 saved_results = {'psnr': [], 'ssim': []}
