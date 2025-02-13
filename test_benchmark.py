@@ -16,7 +16,7 @@ from model import Generator
 
 parser = argparse.ArgumentParser(description='Test Benchmark Datasets')
 parser.add_argument('--upscale_factor', default=4, type=int, help='super resolution upscale factor')
-parser.add_argument('--model_name', default='Flicker2K_srgan__netG_epoch_4_93.pth', type=str, help='generator model epoch name')
+parser.add_argument('--model_name', default='netG_epoch_4_100.pth', type=str, help='generator model epoch name')
 opt = parser.parse_args()
 
 UPSCALE_FACTOR = opt.upscale_factor
@@ -31,7 +31,7 @@ if torch.cuda.is_available():
 model.load_state_dict(torch.load('epochs/' + MODEL_NAME))
 
 test_set = TestDatasetFromFolder('data/test', upscale_factor=UPSCALE_FACTOR)
-test_loader = DataLoader(dataset=test_set, num_workers=0, batch_size=1, shuffle=False)
+test_loader = DataLoader(dataset=test_set, num_workers=4, batch_size=1, shuffle=False)
 test_bar = tqdm(test_loader, desc='[testing benchmark datasets]')
 
 out_path = 'benchmark_results/SRF_' + str(UPSCALE_FACTOR) + '/'
@@ -40,8 +40,8 @@ if not os.path.exists(out_path):
 
 for image_name, lr_image, hr_restore_img, hr_image in test_bar:
     image_name = image_name[0]
-    lr_image = Variable(lr_image)
-    hr_image = Variable(hr_image)
+    lr_image = Variable(lr_image, volatile=True)
+    hr_image = Variable(hr_image, volatile=True)
     if torch.cuda.is_available():
         lr_image = lr_image.cuda()
         hr_image = hr_image.cuda()
@@ -49,7 +49,7 @@ for image_name, lr_image, hr_restore_img, hr_image in test_bar:
     sr_image = model(lr_image)
     mse = ((hr_image - sr_image) ** 2).data.mean()
     psnr = 10 * log10(1 / mse)
-    ssim = pytorch_ssim.ssim(sr_image, hr_image).item()
+    ssim = pytorch_ssim.ssim(sr_image, hr_image).data[0]
 
     test_images = torch.stack(
         [display_transform()(hr_restore_img.squeeze(0)), display_transform()(hr_image.data.cpu().squeeze(0)),
