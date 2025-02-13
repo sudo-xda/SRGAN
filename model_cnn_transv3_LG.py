@@ -17,7 +17,7 @@ class Generator(nn.Module):
         self.transformer_blocks = nn.ModuleList([
             EfficientTransformerBlock(
                 dim=64,
-                num_heads=16,
+                num_heads=32,
                 chunk_size=64  # Reduced chunk size
             ) for _ in range(6)
         ])

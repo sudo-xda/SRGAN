@@ -5,3 +5,12 @@
 *.jpg
 *.png
 custom_train_for_lower_GPUV2.py
+statistics/.~lock.CT_HYBRID__srf_4x_train_results.csv#
+statistics/.~lock.Flicker2K_Hybrid__srf_4x_train_results.csv#
+statistics/.~lock.Flicker2K_srgan__srf_4x_train_results.csv#
+statistics/CT_HYBRID__srf_4x_train_results.csv
+statistics/CT_HYBRIDO__srf_4x_train_results.csv
+statistics/CT_srgan__srf_4x_train_results.csv
+statistics/Flicker2K_Hybrid__srf_4x_train_results.csv
+statistics/Flicker2K_srgan__srf_4x_train_results.csv
+statistics/plots.ipynb

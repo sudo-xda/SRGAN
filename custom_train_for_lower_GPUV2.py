@@ -10,11 +10,11 @@ from tqdm import tqdm
 import pytorch_ssim
 from data_utils import TrainDatasetFromFolder, ValDatasetFromFolder, display_transform
 from loss import GeneratorLoss
-from model import Generator, Discriminator
+from model_cnn_transv3_LG import Generator, Discriminator
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int)
-parser.add_argument('--upscale_factor', default=2, type=int, choices=[2, 4, 8])
+parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', default=100, type=int)
 
 if __name__ == '__main__':
@@ -24,10 +24,10 @@ if __name__ == '__main__':
     UPSCALE_FACTOR = opt.upscale_factor
     NUM_EPOCHS = opt.num_epochs
 
-    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT_Val', upscale_factor=UPSCALE_FACTOR)
-    train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=64, shuffle=True)
-    val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=1, shuffle=False)
+    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR_val', upscale_factor=UPSCALE_FACTOR)
+    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=64, shuffle=True)
+    val_loader = DataLoader(dataset=val_set, num_workers=8, batch_size=1, shuffle=False)
 
     netG = Generator(UPSCALE_FACTOR)
     netD = Discriminator()

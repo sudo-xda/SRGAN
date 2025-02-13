@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int)
 parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', default=100, type=int)
-parser.add_argument('--file_name', default='Flicker2K_Hybrid_', type=str, help='Custom file name to be appended to the output')
+parser.add_argument('--file_name', default='CT_HYBRIDO_', type=str, help='Custom file name to be appended to the output')
 
 if __name__ == '__main__':
     opt = parser.parse_args()
@@ -29,10 +29,12 @@ if __name__ == '__main__':
     if FILE_NAME == '':
         FILE_NAME = 'default_model'
 
-    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR_val', upscale_factor=UPSCALE_FACTOR)
+    # train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+    # val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR_val', upscale_factor=UPSCALE_FACTOR)
+    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT_Val', upscale_factor=UPSCALE_FACTOR)
     train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=64, shuffle=True)
-    val_loader = DataLoader(dataset=val_set, num_workers=8, batch_size=1, shuffle=False)
+    val_loader = DataLoader(dataset=val_set, num_workers=16, batch_size=1, shuffle=False)
 
     netG = Generator(UPSCALE_FACTOR)
     netD = Discriminator()
@@ -130,8 +132,8 @@ if __name__ == '__main__':
                     val_bar.set_description(desc=f'[Converting LR to SR] PSNR: {valing_results["psnr"]:.4f} dB SSIM: {valing_results["ssim"]:.4f}')
                     
                     if saved_images < max_saved_images:
-                        sr_image = display_transform()(sr[0].cpu())
-                        hr_image = display_transform()(hr[0].cpu())
+                        sr_image = display_transform()(sr[0].cuda())
+                        hr_image = display_transform()(hr[0].cuda())
                         lr_image = display_transform()(val_hr_restore[0])
                         
                         grid = utils.make_grid([lr_image, hr_image, sr_image], nrow=3, padding=5)
