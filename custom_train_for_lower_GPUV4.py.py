@@ -10,13 +10,13 @@ from tqdm import tqdm
 import pytorch_ssim
 from data_utils import TrainDatasetFromFolder, ValDatasetFromFolder, display_transform
 from loss import GeneratorLoss
-from model_cnn_transv3_LG import Generator, Discriminator
+from model_cnn_transv4_LG import Generator, Discriminator
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int)
 parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', default=100, type=int)
-parser.add_argument('--file_name', default='CT_HYBRIDo_', type=str, help='Custom file name to be appended to the output')
+parser.add_argument('--file_name', default='CT_HYBRIDV4net_', type=str, help='Custom file name to be appended to the output')
 
 if __name__ == '__main__':
     opt = parser.parse_args()

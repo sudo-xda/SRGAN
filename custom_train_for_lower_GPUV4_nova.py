@@ -6,13 +6,13 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from data_utils import TrainDatasetFromFolder
 from loss import GeneratorLoss
-from model_cnn_trans import Generator, Discriminator
+from model_cnn_transv4_LG import Generator, Discriminator
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
-parser.add_argument('--crop_size', default=128, type=int)
-parser.add_argument('--upscale_factor', default=2, type=int, choices=[2, 4, 8])
+parser.add_argument('--crop_size', default=88, type=int)
+parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', default=100, type=int)
-parser.add_argument('--file_name', default='BN_64_batch_ctrans', type=str, help='Custom file name to be appended to the output')
+parser.add_argument('--file_name', default='HybridV4', type=str, help='Custom file name to be appended to the output')
 
 if __name__ == '__main__':
     opt = parser.parse_args()
