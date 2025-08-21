@@ -11,12 +11,13 @@ import pytorch_ssim
 from data_utils import TrainDatasetFromFolder, ValDatasetFromFolder, display_transform
 from loss import GeneratorLoss
 from model_cnn_transv4_LG import Generator, Discriminator
+#from model import Generator, Discriminator
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int)
 parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', default=100, type=int)
-parser.add_argument('--file_name', default='CT_HYBRIDV4net_', type=str, help='Custom file name to be appended to the output')
+parser.add_argument('--file_name', default='Xray_HYBRID_GAN_NIH_', type=str, help='Custom file name to be appended to the output')
 
 if __name__ == '__main__':
     opt = parser.parse_args()
@@ -32,9 +33,9 @@ if __name__ == '__main__':
 
     # hr_folder = "/home/dst/Desktop/GAN/SRGAN/data/wavlet/LL"Flickr2K/Flickr2K_HR
     # val_folder = "/home/dst/Desktop/GAN/SRGAN/data/wavlet/LL_val"
-    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT_Val', upscale_factor=UPSCALE_FACTOR)
-    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=64, shuffle=True)
+    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/CHEST-XRAY-BIG-512', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/CHEST-XRAY-BIG-512-val', upscale_factor=UPSCALE_FACTOR)
+    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=4, shuffle=True)
     val_loader = DataLoader(dataset=val_set, num_workers=16, batch_size=1, shuffle=False)
 
     netG = Generator(UPSCALE_FACTOR)

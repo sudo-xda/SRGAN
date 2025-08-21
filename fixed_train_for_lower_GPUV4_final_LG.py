@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int)
 parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', default=100, type=int)
-parser.add_argument('--file_name', default='Xray_HYBRIDV4-GAN_NIH16B', type=str, help='Custom file name to be appended to the output')
+parser.add_argument('--file_name', default='Xray_HYBRIDV4-GAN_NIH4B', type=str, help='Custom file name to be appended to the output')
 
 if __name__ == '__main__':
     opt = parser.parse_args()
@@ -29,14 +29,14 @@ if __name__ == '__main__':
 
     train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/CHEST-XRAY-BIG-512', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
     val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/CHEST-XRAY-BIG-512-val', upscale_factor=UPSCALE_FACTOR)
-    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=100, shuffle=True)
+    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=4, shuffle=True)
     val_loader = DataLoader(dataset=val_set, num_workers=8, batch_size=1, shuffle=False)
 
     netG = Generator(UPSCALE_FACTOR).cuda()
     netD = Discriminator().cuda()
     generator_criterion = GeneratorLoss().cuda()
 
-    optimizerG = optim.Adam(netG.parameters(), lr=0.00001)
+    optimizerG = optim.Adam(netG.parameters())#, lr=0.00001)
     optimizerD = optim.Adam(netD.parameters())
 
     results = {'d_loss': [], 'g_loss': [], 'd_score': [], 'g_score': [], 'psnr': [], 'ssim': [], 'loss_ratio': [], 'learning_rate': []}
@@ -99,15 +99,19 @@ if __name__ == '__main__':
                 hr = val_hr.cuda()
                 sr = netG(lr).detach()
 
-                batch_mse = ((sr - hr) ** 2).mean().cpu().item()
+                # ✅ Cast to float32 for SSIM + MSE
+                batch_mse = ((sr.float() - hr.float()) ** 2).mean().cpu().item()
                 valing_results['mse'] += batch_mse * batch_size
-                batch_ssim = pytorch_ssim.ssim(sr, hr).cpu().item()
+
+                batch_ssim = pytorch_ssim.ssim(sr.float(), hr.float()).cpu().item()
                 valing_results['ssims'] += batch_ssim * batch_size
 
-                valing_results['psnr'] = 10 * log10((hr.max() ** 2).cpu().item() / (valing_results['mse'] / valing_results['batch_sizes']))
+                valing_results['psnr'] = 10 * log10((hr.max() ** 2).cpu().item() /
+                                                    (valing_results['mse'] / valing_results['batch_sizes']))
                 valing_results['ssim'] = valing_results['ssims'] / valing_results['batch_sizes']
 
-                val_bar.set_description(desc=f'[Validation] PSNR: {valing_results["psnr"]:.4f} dB SSIM: {valing_results["ssim"]:.4f}')
+                val_bar.set_description(desc=f'[Validation] PSNR: {valing_results["psnr"]:.4f} dB '
+                                            f'SSIM: {valing_results["ssim"]:.4f}')
 
                 if saved_images < max_saved_images:
                     for i in range(batch_size):
@@ -125,6 +129,7 @@ if __name__ == '__main__':
 
                 del sr, lr, hr
                 torch.cuda.empty_cache()
+
 
         torch.save(netG.state_dict(), f'epochs/{FILE_NAME}_netG_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
         torch.save(netD.state_dict(), f'epochs/{FILE_NAME}_netD_epoch_{UPSCALE_FACTOR}_{epoch}.pth')

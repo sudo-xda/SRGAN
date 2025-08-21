@@ -14,9 +14,9 @@ from model_cnn_transv3_LG import Generator, Discriminator
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int)
-parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
+parser.add_argument('--upscale_factor', default=8, type=int, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', default=100, type=int)
-parser.add_argument('--file_name', default='CT_HYBRIDO_', type=str, help='Custom file name to be appended to the output')
+parser.add_argument('--file_name', default='fLICKER_HYBRIDLR0.0001_b4', type=str, help='Custom file name to be appended to the output')
 
 if __name__ == '__main__':
     opt = parser.parse_args()
@@ -29,11 +29,11 @@ if __name__ == '__main__':
     if FILE_NAME == '':
         FILE_NAME = 'default_model'
 
-    # train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-    # val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR_val', upscale_factor=UPSCALE_FACTOR)
-    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT_Val', upscale_factor=UPSCALE_FACTOR)
-    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=64, shuffle=True)
+    train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+    val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/Flickr2K/Flickr2K_HR_val', upscale_factor=UPSCALE_FACTOR)
+    #train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+    #val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/HR_CT_Val', upscale_factor=UPSCALE_FACTOR)
+    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=4, shuffle=True)
     val_loader = DataLoader(dataset=val_set, num_workers=16, batch_size=1, shuffle=False)
 
     netG = Generator(UPSCALE_FACTOR)
@@ -45,8 +45,8 @@ if __name__ == '__main__':
         netD.cuda()
         generator_criterion.cuda()
 
-    optimizerG = optim.Adam(netG.parameters())
-    optimizerD = optim.Adam(netD.parameters())
+    optimizerG = optim.Adam(netG.parameters(),lr=0.0001)
+    optimizerD = optim.Adam(netD.parameters(),lr=0.0001)
 
     results = {'d_loss': [], 'g_loss': [], 'd_score': [], 'g_score': [], 'psnr': [], 'ssim': [], 
               'loss_ratio': [], 'learning_rate': [], 'fid': []}

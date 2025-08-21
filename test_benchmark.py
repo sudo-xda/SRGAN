@@ -12,18 +12,18 @@ from tqdm import tqdm
 
 import pytorch_ssim
 from data_utils import TestDatasetFromFolder, display_transform
-from model import Generator
+from model_cnn_transv3_LG import Generator
 
 parser = argparse.ArgumentParser(description='Test Benchmark Datasets')
 parser.add_argument('--upscale_factor', default=4, type=int, help='super resolution upscale factor')
-parser.add_argument('--model_name', default='netG_epoch_4_100.pth', type=str, help='generator model epoch name')
+parser.add_argument('--model_name', default='Flicker_HYBRIDV3_lr0.0002_16B_netG_epoch_4_100.pth', type=str, help='generator model epoch name')
 opt = parser.parse_args()
 
 UPSCALE_FACTOR = opt.upscale_factor
 MODEL_NAME = opt.model_name
 
 results = {'Set5': {'psnr': [], 'ssim': []}, 'Set14': {'psnr': [], 'ssim': []}, 'BSD100': {'psnr': [], 'ssim': []},
-           'Urban100': {'psnr': [], 'ssim': []}, 'SunHays80': {'psnr': [], 'ssim': []}}
+           'Urban100': {'psnr': [], 'ssim': []}, 'historical': {'psnr': [], 'ssim': []}}
 
 model = Generator(UPSCALE_FACTOR).eval()
 if torch.cuda.is_available():
