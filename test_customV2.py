@@ -7,15 +7,16 @@ from PIL import Image
 from torch.autograd import Variable
 from torchvision.transforms import ToTensor, ToPILImage, Resize
 
-from model_cnn_trans import Generator
+#from model_cnn_transv3_LG import Generator
+from model import Generator
 
 # Argument Parser
 parser = argparse.ArgumentParser(description='Super Resolution Processing')
 parser.add_argument('--upscale_factor', default=4, type=int, help='super resolution upscale factor')
-parser.add_argument('--test_mode', default='CPU', type=str, choices=['GPU', 'CPU'], help='using GPU or CPU')
+parser.add_argument('--test_mode', default='GPU', type=str, choices=['GPU', 'CPU'], help='using GPU or CPU')
 parser.add_argument('--test_folder', type=str, help='folder containing high-resolution images')
 parser.add_argument('--output_folder', type=str, help='folder to save GT, LR, and SR images')
-parser.add_argument('--model_name', default='BN_64_batch_ctrans_netG_epoch_4_100.pth', type=str, help='generator model epoch name')
+parser.add_argument('--model_name', default='/Final_SRGAN_NIH-04-09-lrsch-novggv2/netG_epoch_4_208.pth', type=str, help='generator model epoch name')
 opt = parser.parse_args()
 
 # Parameters
@@ -66,7 +67,10 @@ for image_name in os.listdir(TEST_FOLDER):
         lr_tensor = lr_tensor.cuda()
 
     start = time.time()
-    sr_tensor = model(lr_tensor)  # Super-Resolution Output
+    #sr_tensor = model(lr_tensor)  # Super-Resolution Output
+    with torch.no_grad():
+        sr_tensor = model(lr_tensor)
+
     elapsed = time.time() - start
     print(f"Processed {image_name} in {elapsed:.4f}s")
 
@@ -75,3 +79,6 @@ for image_name in os.listdir(TEST_FOLDER):
     sr_image.save(os.path.join(SR_FOLDER, image_name))  # Save SR Image
 
 print("Processing complete. GT, LR, and SR images are saved in:", OUTPUT_FOLDER)
+
+
+ #python test_customV2.py --test_folder "/home/dst/Desktop/GAN/SRGAN/Test_set"     --output_folder "/home/dst/Desktop/GAN/SRGAN/output"

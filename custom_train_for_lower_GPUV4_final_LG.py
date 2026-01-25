@@ -10,14 +10,14 @@ from tqdm import tqdm
 import pytorch_ssim
 from data_utils import TrainDatasetFromFolder, ValDatasetFromFolder, display_transform
 from loss import GeneratorLoss
-from model_cnn_transv4_LG import Generator, Discriminator
+from model_cnn_transv3_LG import Generator, Discriminator
 #from model import Generator, Discriminator
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int)
 parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8])
-parser.add_argument('--num_epochs', default=100, type=int)
-parser.add_argument('--file_name', default='Xray_HYBRIDV4-GAN_NIH16B', type=str, help='Custom file name to be appended to the output')
+parser.add_argument('--num_epochs', default=150, type=int)
+parser.add_argument('--file_name', default='Final_Xray_HYBRIDV3-GAN_NIH4B25-08', type=str, help='Custom file name to be appended to the output')
 
 if __name__ == '__main__':
     opt = parser.parse_args()
@@ -29,14 +29,14 @@ if __name__ == '__main__':
 
     train_set = TrainDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/CHEST-XRAY-BIG-512', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
     val_set = ValDatasetFromFolder('/home/dst/Desktop/GAN/SRGAN_old/data/CHEST-XRAY-BIG-512-val', upscale_factor=UPSCALE_FACTOR)
-    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=100, shuffle=True)
+    train_loader = DataLoader(dataset=train_set, num_workers=8, batch_size=4, shuffle=True)
     val_loader = DataLoader(dataset=val_set, num_workers=8, batch_size=1, shuffle=False)
 
     netG = Generator(UPSCALE_FACTOR).cuda()
     netD = Discriminator().cuda()
     generator_criterion = GeneratorLoss().cuda()
 
-    optimizerG = optim.Adam(netG.parameters(), lr=0.00001)
+    optimizerG = optim.Adam(netG.parameters() )
     optimizerD = optim.Adam(netD.parameters())
 
     results = {'d_loss': [], 'g_loss': [], 'd_score': [], 'g_score': [], 'psnr': [], 'ssim': [], 'loss_ratio': [], 'learning_rate': []}
@@ -126,8 +126,8 @@ if __name__ == '__main__':
                 del sr, lr, hr
                 torch.cuda.empty_cache()
 
-        torch.save(netG.state_dict(), f'epochs/{FILE_NAME}_netG_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
-        torch.save(netD.state_dict(), f'epochs/{FILE_NAME}_netD_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
+        #torch.save(netG.state_dict(), f'epochs/{FILE_NAME}_netG_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
+        #torch.save(netD.state_dict(), f'epochs/{FILE_NAME}_netD_epoch_{UPSCALE_FACTOR}_{epoch}.pth')
 
         results['d_loss'].append(running_results['d_loss'] / running_results['batch_sizes'])
         results['g_loss'].append(running_results['g_loss'] / running_results['batch_sizes'])

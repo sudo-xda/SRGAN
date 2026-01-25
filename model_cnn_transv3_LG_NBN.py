@@ -9,11 +9,13 @@ class Generator(nn.Module):
         super().__init__()
         upsample_block_num = int(math.log(scale_factor, 2))
         
+        # Initial feature extraction
         self.block1 = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=9, padding=4),
             nn.PReLU()
         )
         
+        # Transformer blocks
         self.transformer_blocks = nn.ModuleList([
             EfficientTransformerBlock(
                 dim=64,
@@ -22,14 +24,16 @@ class Generator(nn.Module):
             ) for _ in range(6)
         ])
         
+        # Residual conv (no BatchNorm here)
         self.block7 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3, padding=1),
-            #nn.BatchNorm2d(64)
+            nn.Conv2d(64, 64, kernel_size=3, padding=1)
         )
         
+        # Upsample layers
         block8 = [UpsampleBlock(64) for _ in range(upsample_block_num)]
         self.block8 = nn.Sequential(*block8)
         
+        # Final output conv
         self.block9 = nn.Conv2d(64, 3, kernel_size=9, padding=4)
         
     def forward(self, x):
@@ -155,47 +159,45 @@ class UpsampleBlock(nn.Module):
         x = self.pixel_shuffle(x)
         x = self.prelu(x)
         return x
-    
+
+
+
+import torch
+import torch.nn as nn
+from torch.nn.utils import spectral_norm
 
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
         self.net = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, padding=1),
-            nn.LeakyReLU(0.2),
+            spectral_norm(nn.Conv2d(3, 64, kernel_size=3, padding=1)),  # grayscale input
+            nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(64, 64, kernel_size=3, stride=2, padding=1),
-            nn.BatchNorm2d(64),
-            nn.LeakyReLU(0.2),
+            spectral_norm(nn.Conv2d(64, 64, kernel_size=3, stride=2, padding=1)),
+            nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(64, 128, kernel_size=3, padding=1),
-            nn.BatchNorm2d(128),
-            nn.LeakyReLU(0.2),
+            spectral_norm(nn.Conv2d(64, 128, kernel_size=3, padding=1)),
+            nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(128, 128, kernel_size=3, stride=2, padding=1),
-            nn.BatchNorm2d(128),
-            nn.LeakyReLU(0.2),
+            spectral_norm(nn.Conv2d(128, 128, kernel_size=3, stride=2, padding=1)),
+            nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(128, 256, kernel_size=3, padding=1),
-            nn.BatchNorm2d(256),
-            nn.LeakyReLU(0.2),
+            spectral_norm(nn.Conv2d(128, 256, kernel_size=3, padding=1)),
+            nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(256, 256, kernel_size=3, stride=2, padding=1),
-            nn.BatchNorm2d(256),
-            nn.LeakyReLU(0.2),
+            spectral_norm(nn.Conv2d(256, 256, kernel_size=3, stride=2, padding=1)),
+            nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(256, 512, kernel_size=3, padding=1),
-            nn.BatchNorm2d(512),
-            nn.LeakyReLU(0.2),
+            spectral_norm(nn.Conv2d(256, 512, kernel_size=3, padding=1)),
+            nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Conv2d(512, 512, kernel_size=3, stride=2, padding=1),
-            nn.BatchNorm2d(512),
-            nn.LeakyReLU(0.2),
+            spectral_norm(nn.Conv2d(512, 512, kernel_size=3, stride=2, padding=1)),
+            nn.LeakyReLU(0.2, inplace=True),
 
             nn.AdaptiveAvgPool2d(1),
-            nn.Conv2d(512, 1024, kernel_size=1),
-            nn.LeakyReLU(0.2),
-            nn.Conv2d(1024, 1, kernel_size=1)
+            spectral_norm(nn.Conv2d(512, 1024, kernel_size=1)),
+            nn.LeakyReLU(0.2, inplace=True),
+            spectral_norm(nn.Conv2d(1024, 1, kernel_size=1))
         )
 
     def forward(self, x):

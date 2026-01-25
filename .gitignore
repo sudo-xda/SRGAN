@@ -14,3 +14,5 @@ statistics/CT_srgan__srf_4x_train_results.csv
 statistics/Flicker2K_Hybrid__srf_4x_train_results.csv
 statistics/Flicker2K_srgan__srf_4x_train_results.csv
 statistics/plots.ipynb
+*.zip
+*.csv
